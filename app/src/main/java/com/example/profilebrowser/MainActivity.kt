@@ -1,6 +1,5 @@
 package com.example.profilebrowser
 
-import android.Manifest
 import android.accounts.AccountManager
 import android.content.Intent
 import android.os.Bundle
@@ -66,37 +65,38 @@ class MainActivity : ComponentActivity() {
                 startActivity(intent)
             }
 
-            /** ফোনের Google (Gmail) অ্যাকাউন্টগুলো পড়ে প্রতিটার জন্য Gmail প্রোফাইল বানায়।
-                ফেরত: নতুন কতগুলো প্রোফাইল বানানো হলো; অ্যাকাউন্ট না পেলে -১। */
-            fun buildGmailProfiles(): Int {
-                val before = profiles.size
-                val emails = try {
-                    AccountManager.get(this).getAccountsByType("com.google").map { it.name }
-                } catch (_: Exception) {
-                    emptyList()
-                }
-                if (emails.isEmpty()) return -1
-                profiles = ProfileStore.addGmailProfiles(this, emails)
-                return profiles.size - before
-            }
+            /** Gmail অ্যাকাউন্ট বাছার সিস্টেম পিকার খোলার Intent।
+                Android 8+ থেকে অ্যাপ সরাসরি ফোনের Google অ্যাকাউন্ট পড়তে পারে না
+                (getAccountsByType খালি দেয়), তাই সিস্টেমের নিজের পিকারই একমাত্র পথ। */
+            fun gmailPickerIntent() = AccountManager.newChooseAccountIntent(
+                null, null, arrayOf("com.google"), false, null, null, null, null
+            )
 
-            val gmailPermissionLauncher = rememberLauncherForActivityResult(
-                ActivityResultContracts.RequestPermission()
-            ) { granted ->
-                if (granted) {
-                    val added = buildGmailProfiles()
-                    val msg = when {
-                        added < 0 -> "ফোনে কোনো Gmail অ্যাকাউন্ট পাওয়া যায়নি"
-                        added == 0 -> "সব Gmail-এর প্রোফাইল আগেই আছে"
-                        else -> "${added}টি Gmail প্রোফাইল বানানো হয়েছে"
+            val gmailPickerLauncher = rememberLauncherForActivityResult(
+                ActivityResultContracts.StartActivityForResult()
+            ) { result ->
+                if (result.resultCode == RESULT_OK) {
+                    val email = result.data?.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
+                    val type = result.data?.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE)
+                    if (!email.isNullOrBlank() && type == "com.google") {
+                        val before = profiles.size
+                        profiles = ProfileStore.addGmailProfiles(this, listOf(email))
+                        if (profiles.size > before) {
+                            Toast.makeText(
+                                this,
+                                "প্রোফাইল বানানো হয়েছে: $email",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            Toast.makeText(
+                                this,
+                                "এই Gmail-এর প্রোফাইল আগেই আছে",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        // আরো Gmail যোগ করতে পিকার আবার খুলুন; Back চাপলে শেষ।
+                        gmailPickerLauncher.launch(gmailPickerIntent())
                     }
-                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(
-                        this,
-                        "অনুমতি না দিলে Gmail অ্যাকাউন্ট পড়া যাবে না",
-                        Toast.LENGTH_SHORT
-                    ).show()
                 }
             }
 
@@ -122,15 +122,13 @@ class MainActivity : ComponentActivity() {
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 Button(
-                    onClick = {
-                        gmailPermissionLauncher.launch(Manifest.permission.GET_ACCOUNTS)
-                    },
+                    onClick = { gmailPickerLauncher.launch(gmailPickerIntent()) },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("📧 Gmail অ্যাকাউন্ট থেকে সব প্রোফাইল বানান")
+                    Text("📧 Gmail অ্যাকাউন্ট থেকে প্রোফাইল বানান")
                 }
                 Text(
-                    "ফোনে যতগুলো Gmail আছে, ততগুলো প্রোফাইল একবারে বানাবে। প্রথমবার একবার অনুমতি চাইবে।",
+                    "ফোনের Gmail অ্যাকাউন্টগুলো একটা একটা করে বাছুন — যতগুলো বাছবেন, ততগুলো প্রোফাইল হবে। শেষ করতে Back চাপুন।",
                     fontSize = 13.sp
                 )
                 Spacer(modifier = Modifier.height(12.dp))
