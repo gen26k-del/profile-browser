@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- লোগোর gradient ব্যাকগ্রাউন্ড (নীল → বেগুনি), foreground PNG-এর সাথে মেলে -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <gradient
+        android:angle="45"
+        android:startColor="#1E88E5"
+        android:endColor="#7C4DFF"
+        android:type="linear" />
+</shape>
