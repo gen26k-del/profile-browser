@@ -30,6 +30,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -72,6 +73,8 @@ class MainActivity : ComponentActivity() {
                 null, null, arrayOf("com.google"), false, null, null, null, null
             )
 
+            var reopenGmailPicker by remember { mutableStateOf(false) }
+
             val gmailPickerLauncher = rememberLauncherForActivityResult(
                 ActivityResultContracts.StartActivityForResult()
             ) { result ->
@@ -95,8 +98,15 @@ class MainActivity : ComponentActivity() {
                             ).show()
                         }
                         // আরো Gmail যোগ করতে পিকার আবার খুলুন; Back চাপলে শেষ।
-                        gmailPickerLauncher.launch(gmailPickerIntent())
+                        reopenGmailPicker = true
                     }
+                }
+            }
+
+            LaunchedEffect(reopenGmailPicker) {
+                if (reopenGmailPicker) {
+                    reopenGmailPicker = false
+                    gmailPickerLauncher.launch(gmailPickerIntent())
                 }
             }
 
