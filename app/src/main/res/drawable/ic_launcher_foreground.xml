@@ -1,0 +1,13 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- মানুষের সিলুয়েট: মাথা + কাঁধ -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M40,30a14,14 0 1,0 28,0a14,14 0 1,0 -28,0Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M28,86L28,82C28,66 40,58 54,58C68,58 80,66 80,82L80,86Z" />
+</vector>
