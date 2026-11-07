@@ -12,8 +12,8 @@ android {
         applicationId = "com.example.profilebrowser"
         minSdk = 28
         targetSdk = 34
-        versionCode = 3
-        versionName = "1.2 স্টাইলিশ-লোগো"
+        versionCode = 4
+        versionName = "1.3 জিমেইল-প্রোফাইল"
     }
 
     compileOptions {

@@ -9,7 +9,7 @@ import java.util.UUID
 data class Profile(
     val id: String,
     val name: String,
-    val type: String, // "facebook" | "messenger" | "custom"
+    val type: String, // "facebook" | "messenger" | "gmail" | "custom"
     val url: String
 ) {
     fun typeLabel(): String = when (type) {
@@ -87,6 +87,27 @@ object ProfileStore {
 
     fun delete(ctx: Context, id: String): List<Profile> {
         val list = loadAll(ctx).filter { it.id != id }
+        saveAll(ctx, list)
+        return list
+    }
+
+    /** ফোনের Gmail অ্যাকাউন্টগুলো থেকে Gmail প্রোফাইল বানায় — যেগুলো নেই সেগুলোই।
+        নাম হিসেবে পুরো ইমেইল ঠিকানাটা থাকে, যাতে কোনটা কোন Gmail বোঝা যায়। */
+    fun addGmailProfiles(ctx: Context, emails: List<String>): List<Profile> {
+        val list = loadAll(ctx).toMutableList()
+        val existing = list.map { it.name }.toSet()
+        emails.distinct().forEach { email ->
+            if (email !in existing) {
+                list.add(
+                    Profile(
+                        UUID.randomUUID().toString(),
+                        email,
+                        "gmail",
+                        Profile.defaultUrl("gmail")
+                    )
+                )
+            }
+        }
         saveAll(ctx, list)
         return list
     }

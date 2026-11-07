@@ -1,10 +1,14 @@
 package com.example.profilebrowser
 
+import android.Manifest
+import android.accounts.AccountManager
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -62,6 +66,40 @@ class MainActivity : ComponentActivity() {
                 startActivity(intent)
             }
 
+            /** ফোনের Google (Gmail) অ্যাকাউন্টগুলো পড়ে প্রতিটার জন্য Gmail প্রোফাইল বানায়।
+                ফেরত: নতুন কতগুলো প্রোফাইল বানানো হলো; অ্যাকাউন্ট না পেলে -১। */
+            fun buildGmailProfiles(): Int {
+                val before = profiles.size
+                val emails = try {
+                    AccountManager.get(this).getAccountsByType("com.google").map { it.name }
+                } catch (_: Exception) {
+                    emptyList()
+                }
+                if (emails.isEmpty()) return -1
+                profiles = ProfileStore.addGmailProfiles(this, emails)
+                return profiles.size - before
+            }
+
+            val gmailPermissionLauncher = rememberLauncherForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { granted ->
+                if (granted) {
+                    val added = buildGmailProfiles()
+                    val msg = when {
+                        added < 0 -> "ফোনে কোনো Gmail অ্যাকাউন্ট পাওয়া যায়নি"
+                        added == 0 -> "সব Gmail-এর প্রোফাইল আগেই আছে"
+                        else -> "${added}টি Gmail প্রোফাইল বানানো হয়েছে"
+                    }
+                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(
+                        this,
+                        "অনুমতি না দিলে Gmail অ্যাকাউন্ট পড়া যাবে না",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
             Column(
                 modifier = Modifier.fillMaxSize().padding(16.dp)
             ) {
@@ -85,6 +123,19 @@ class MainActivity : ComponentActivity() {
                 Spacer(modifier = Modifier.height(12.dp))
                 Button(
                     onClick = {
+                        gmailPermissionLauncher.launch(Manifest.permission.GET_ACCOUNTS)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("📧 Gmail অ্যাকাউন্ট থেকে সব প্রোফাইল বানান")
+                }
+                Text(
+                    "ফোনে যতগুলো Gmail আছে, ততগুলো প্রোফাইল একবারে বানাবে। প্রথমবার একবার অনুমতি চাইবে।",
+                    fontSize = 13.sp
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Button(
+                    onClick = {
                         newName = ""
                         newType = "facebook"
                         newUrl = ""
@@ -96,7 +147,7 @@ class MainActivity : ComponentActivity() {
                 }
                 Spacer(modifier = Modifier.height(12.dp))
                 if (profiles.isEmpty()) {
-                    Text("এখনো কোনো প্রোফাইল নেই। উপরের বোতাম চেপে প্রথম প্রোফাইল বানান — যেমন \"Facebook ১\"।")
+                    Text("এখনো কোনো প্রোফাইল নেই। উপরের Gmail বোতাম চাপলে ফোনের সব Gmail-এর প্রোফাইল একবারে বানাবে, আর চাইলে হাতে করেও বানাতে পারেন।")
                 }
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(10.dp)
