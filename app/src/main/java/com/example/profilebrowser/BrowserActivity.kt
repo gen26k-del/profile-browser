@@ -54,7 +54,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color as UiColor
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -148,7 +148,7 @@ class BrowserActivity : ComponentActivity() {
                         ) {
                             Text(
                                 profile.name.trim().firstOrNull()?.toString() ?: "?",
-                                color = Color.White,
+                                color = UiColor.White,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 18.sp
                             )
@@ -187,7 +187,7 @@ class BrowserActivity : ComponentActivity() {
                                         ) {
                                             Text(
                                                 p.name.trim().firstOrNull()?.toString() ?: "?",
-                                                color = Color.White,
+                                                color = UiColor.White,
                                                 fontWeight = FontWeight.Bold,
                                                 fontSize = 14.sp
                                             )
@@ -291,8 +291,8 @@ class BrowserActivity : ComponentActivity() {
 
 /** প্রতিটি প্রোফাইলের আলাদা রং (Chrome-এর অবতারের মতো)। */
 private val profileColors = listOf(
-    Color(0xFF1E88E5), Color(0xFF43A047), Color(0xFFFB8C00),
-    Color(0xFF8E24AA), Color(0xFF00897B), Color(0xFFE53935)
+    UiColor(0xFF1E88E5), UiColor(0xFF43A047), UiColor(0xFFFB8C00),
+    UiColor(0xFF8E24AA), UiColor(0xFF00897B), UiColor(0xFFE53935)
 )
 
 private fun profileColor(index: Int) = profileColors[index % profileColors.size]

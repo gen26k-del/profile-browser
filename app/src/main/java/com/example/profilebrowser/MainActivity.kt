@@ -10,7 +10,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -160,23 +159,27 @@ class MainActivity : ComponentActivity() {
                                 singleLine = true
                             )
                             Spacer(modifier = Modifier.height(8.dp))
-                            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                OutlinedButton(
-                                    onClick = { newType = "facebook" },
-                                    enabled = newType != "facebook"
-                                ) { Text("Facebook") }
-                                OutlinedButton(
-                                    onClick = { newType = "messenger" },
-                                    enabled = newType != "messenger"
-                                ) { Text("Messenger") }
-                                OutlinedButton(
-                                    onClick = { newType = "gmail" },
-                                    enabled = newType != "gmail"
-                                ) { Text("Gmail") }
-                                OutlinedButton(
-                                    onClick = { newType = "custom" },
-                                    enabled = newType != "custom"
-                                ) { Text("অন্য সাইট") }
+                            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    OutlinedButton(
+                                        onClick = { newType = "facebook" },
+                                        enabled = newType != "facebook"
+                                    ) { Text("Facebook") }
+                                    OutlinedButton(
+                                        onClick = { newType = "messenger" },
+                                        enabled = newType != "messenger"
+                                    ) { Text("Messenger") }
+                                }
+                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    OutlinedButton(
+                                        onClick = { newType = "gmail" },
+                                        enabled = newType != "gmail"
+                                    ) { Text("Gmail") }
+                                    OutlinedButton(
+                                        onClick = { newType = "custom" },
+                                        enabled = newType != "custom"
+                                    ) { Text("অন্য সাইট") }
+                                }
                             }
                             if (newType == "custom") {
                                 Spacer(modifier = Modifier.height(8.dp))
