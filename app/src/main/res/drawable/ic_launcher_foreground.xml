@@ -3,11 +3,28 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- মানুষের সিলুয়েট: মাথা + কাঁধ -->
+    <!-- বড় প্রোফাইল অবতার (সাদা বৃত্ত) -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M40,30a14,14 0 1,0 28,0a14,14 0 1,0 -28,0Z" />
+        android:pathData="M16,46a28,28 0 1,0 56,0a28,28 0 1,0 -56,0Z" />
+    <!-- বড় অবতারের মানুষ (নীল) -->
+    <path
+        android:fillColor="#1E88E5"
+        android:pathData="M35,38a9,9 0 1,0 18,0a9,9 0 1,0 -18,0Z" />
+    <path
+        android:fillColor="#1E88E5"
+        android:pathData="M32,72L32,66C32,60 37,56 44,56C51,56 56,60 56,66L56,72Z" />
+    <!-- ছোট প্রোফাইল অবতার (দ্বিতীয় প্রোফাইল, নীল বর্ডার) -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M28,86L28,82C28,66 40,58 54,58C68,58 80,66 80,82L80,86Z" />
+        android:strokeColor="#1E88E5"
+        android:strokeWidth="2"
+        android:pathData="M58,76a18,18 0 1,0 36,0a18,18 0 1,0 -36,0Z" />
+    <!-- ছোট অবতারের মানুষ (নীল) -->
+    <path
+        android:fillColor="#1E88E5"
+        android:pathData="M70,70a6,6 0 1,0 12,0a6,6 0 1,0 -12,0Z" />
+    <path
+        android:fillColor="#1E88E5"
+        android:pathData="M66,90L66,86C66,82 70,80 76,80C82,80 86,82 86,86L86,90Z" />
 </vector>

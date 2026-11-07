@@ -12,8 +12,8 @@ android {
         applicationId = "com.example.profilebrowser"
         minSdk = 28
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0 প্রোফাইল-ব্রাউজার"
+        versionCode = 2
+        versionName = "1.1 প্রোফাইল-সুইচ"
     }
 
     compileOptions {

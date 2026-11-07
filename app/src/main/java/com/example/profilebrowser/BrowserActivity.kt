@@ -22,11 +22,16 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -35,16 +40,25 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 
 /**
@@ -91,11 +105,16 @@ class BrowserActivity : ComponentActivity() {
         }
         urlText = profile.url
         currentTitle = profile.name
+        // প্রোফাইল বদলানোর মেনুর জন্য সব প্রোফাইল (একই SharedPreferences)
+        val profiles = ProfileStore.loadAll(this)
+        val currentIndex = profiles.indexOfFirst { it.id == profile.id }.coerceAtLeast(0)
 
         setContent {
+            var showProfileMenu by remember { mutableStateOf(false) }
             Column(modifier = Modifier.fillMaxSize()) {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(4.dp)
+                    modifier = Modifier.fillMaxWidth().padding(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(onClick = { goBackOrFinish() }) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "পেছনে")
@@ -116,6 +135,78 @@ class BrowserActivity : ComponentActivity() {
                     }
                     IconButton(onClick = { webView?.loadUrl(profile.url) }) {
                         Icon(Icons.Filled.Home, contentDescription = "হোম")
+                    }
+                    // প্রোফাইল অবতার (Chrome-এর মতো) — চাপলে প্রোফাইল বদলানোর মেনু
+                    Box {
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(CircleShape)
+                                .background(profileColor(currentIndex))
+                                .clickable { showProfileMenu = true },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                profile.name.trim().firstOrNull()?.toString() ?: "?",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = showProfileMenu,
+                            onDismissRequest = { showProfileMenu = false }
+                        ) {
+                            Text(
+                                "প্রোফাইল বদলান",
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                            )
+                            profiles.forEachIndexed { index, p ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Column {
+                                            Text(
+                                                p.name,
+                                                fontWeight = if (p.id == profile.id) FontWeight.Bold else FontWeight.Normal
+                                            )
+                                            Text(p.typeLabel(), fontSize = 12.sp)
+                                        }
+                                    },
+                                    onClick = {
+                                        showProfileMenu = false
+                                        if (p.id != profile.id) restartWithProfile(p.id)
+                                    },
+                                    leadingIcon = {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(32.dp)
+                                                .clip(CircleShape)
+                                                .background(profileColor(index)),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                p.name.trim().firstOrNull()?.toString() ?: "?",
+                                                color = Color.White,
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 14.sp
+                                            )
+                                        }
+                                    },
+                                    trailingIcon = {
+                                        if (p.id == profile.id) Text("✓", fontWeight = FontWeight.Bold)
+                                    }
+                                )
+                            }
+                            HorizontalDivider()
+                            DropdownMenuItem(
+                                text = { Text("প্রোফাইল তালিকা") },
+                                onClick = {
+                                    showProfileMenu = false
+                                    finish()
+                                }
+                            )
+                        }
                     }
                     IconButton(onClick = { finish() }) {
                         Icon(Icons.Filled.Close, contentDescription = "বন্ধ")
@@ -197,6 +288,14 @@ class BrowserActivity : ComponentActivity() {
         super.onDestroy()
     }
 }
+
+/** প্রতিটি প্রোফাইলের আলাদা রং (Chrome-এর অবতারের মতো)। */
+private val profileColors = listOf(
+    Color(0xFF1E88E5), Color(0xFF43A047), Color(0xFFFB8C00),
+    Color(0xFF8E24AA), Color(0xFF00897B), Color(0xFFE53935)
+)
+
+private fun profileColor(index: Int) = profileColors[index % profileColors.size]
 
 /** শর্টকাট আইকন: প্রোফাইলের নামের প্রথম অক্ষর নীল বৃত্তে। */
 fun makeLetterIcon(letter: String): Icon {

@@ -15,6 +15,7 @@ data class Profile(
     fun typeLabel(): String = when (type) {
         "facebook" -> "Facebook"
         "messenger" -> "Messenger"
+        "gmail" -> "Gmail"
         else -> "ওয়েবসাইট"
     }
 
@@ -29,6 +30,7 @@ data class Profile(
         fun defaultUrl(type: String): String = when (type) {
             "facebook" -> "https://www.facebook.com"
             "messenger" -> "https://www.messenger.com"
+            "gmail" -> "https://mail.google.com"
             else -> "https://www.google.com"
         }
 
