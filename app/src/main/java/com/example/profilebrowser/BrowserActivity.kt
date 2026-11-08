@@ -35,6 +35,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddToHomeScreen
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
@@ -207,6 +208,18 @@ class BrowserActivity : ComponentActivity() {
                                 }
                             )
                         }
+                    }
+                    // এই প্রোফাইলের হোম-স্ক্রিন শর্টকাট (সরাসরি এই প্রোফাইল খুলবে)
+                    IconButton(onClick = {
+                        val ok = pinProfileShortcut(this@BrowserActivity, profile)
+                        Toast.makeText(
+                            this@BrowserActivity,
+                            if (ok) "হোম স্ক্রিনে শর্টকাট যোগ হচ্ছে"
+                            else "এই ফোনে শর্টকাট পিন করা যাচ্ছে না",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }) {
+                        Icon(Icons.Filled.AddToHomeScreen, contentDescription = "হোম স্ক্রিনে শর্টকাট")
                     }
                     IconButton(onClick = { finish() }) {
                         Icon(Icons.Filled.Close, contentDescription = "বন্ধ")

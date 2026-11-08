@@ -127,7 +127,7 @@ class MainActivity : ComponentActivity() {
                     )
                 }
                 Text(
-                    "প্রতিটি প্রোফাইলের লগইন আলাদা থাকে — ল্যাপটপের Chrome প্রোফাইলের মতো।",
+                    "প্রতিটি প্রোফাইল একটা Gmail অ্যাকাউন্টের — Chrome-এর মতো। প্রোফাইল খুলে যেকোনো কিছু ব্রাউজ করুন, হোম স্ক্রিনে শর্টকাট বানান।",
                     fontSize = 14.sp
                 )
                 Spacer(modifier = Modifier.height(12.dp))

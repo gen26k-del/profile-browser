@@ -30,16 +30,24 @@ data class Profile(
         fun defaultUrl(type: String): String = when (type) {
             "facebook" -> "https://www.facebook.com"
             "messenger" -> "https://www.messenger.com"
-            "gmail" -> "https://mail.google.com"
+            // Gmail প্রোফাইল Chrome-এর প্রোফাইলের মতো: Gmail শুধু প্রোফাইলের পরিচয়,
+            // ব্রাউজার সাধারণ — Google থেকে যেকোনো কিছু ব্রাউজ করা যায়।
+            "gmail" -> "https://www.google.com"
             else -> "https://www.google.com"
         }
 
-        fun fromJson(o: JSONObject): Profile = Profile(
-            id = o.optString("id", UUID.randomUUID().toString()),
-            name = o.optString("name", "প্রোফাইল"),
-            type = o.optString("type", "facebook"),
-            url = o.optString("url", defaultUrl(o.optString("type", "facebook")))
-        )
+        fun fromJson(o: JSONObject): Profile {
+            val p = Profile(
+                id = o.optString("id", UUID.randomUUID().toString()),
+                name = o.optString("name", "প্রোফাইল"),
+                type = o.optString("type", "facebook"),
+                url = o.optString("url", defaultUrl(o.optString("type", "facebook")))
+            )
+            // পুরনো Gmail প্রোফাইল (mail.google.com খুলত) এখন সাধারণ ব্রাউজার (google.com)।
+            return if (p.type == "gmail" && p.url == "https://mail.google.com") {
+                p.copy(url = "https://www.google.com")
+            } else p
+        }
 
         fun create(name: String, type: String, customUrl: String): Profile {
             val url = if (type == "custom") {
